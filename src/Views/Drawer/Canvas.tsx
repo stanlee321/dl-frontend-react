@@ -5,12 +5,17 @@ interface CanvasProps {
     height: number;
 }
 
+interface ToggleProps {
+    ClickHandler: (event:  React.MouseEvent<HTMLButtonElement>) => null;
+}
+
 type Coordinate = {
     x: number;
     y: number;
 };
 
-const Canvas = ({ width, height }: CanvasProps) => {
+const Canvas = ({ width, height }: CanvasProps, Props: ToggleProps ) => {
+    
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isPainting, setIsPainting] = useState(false);
     const [mousePosition, setMousePosition] = useState<Coordinate | undefined>(undefined);
@@ -22,6 +27,8 @@ const Canvas = ({ width, height }: CanvasProps) => {
             setIsPainting(true);
         }
     }, []);
+
+
 
     useEffect(() => {
         if (!canvasRef.current) {
@@ -46,6 +53,20 @@ const Canvas = ({ width, height }: CanvasProps) => {
         },
         [isPainting, mousePosition]
     );
+
+    // Save Canvas draw to png
+    const saveCanvas = (() => {
+
+        if (!canvasRef.current) {
+            return;
+        }
+        const canvas: HTMLCanvasElement = canvasRef.current;
+        const d = canvas.toDataURL('image/png');
+        // const w = window.open('about:blank', 'image from canvas');
+        // w.document.write("<img src='"+d+"' alt='from canvas'/>");
+        console.log(d)
+        console.log('Saved!');
+    })
 
     useEffect(() => {
         if (!canvasRef.current) {
@@ -105,7 +126,13 @@ const Canvas = ({ width, height }: CanvasProps) => {
         }
     };
 
-    return <canvas ref={canvasRef} height={height} width={width} />;
+    return  <div>
+        <canvas ref={canvasRef} height={height} width={width} />;
+        <button onClick={saveCanvas}>Toggle</button>
+        
+    </div>
+    
+    
 };
 
 Canvas.defaultProps = {
